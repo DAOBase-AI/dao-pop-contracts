@@ -1,0 +1,7 @@
+.idea
+node_modules
+artifacts
+typechain-types
+.vscode
+scripts
+cache
