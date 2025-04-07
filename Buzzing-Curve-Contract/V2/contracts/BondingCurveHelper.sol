@@ -18,27 +18,29 @@ contract BondingCurveHelper is Ownable{
 
     // The main BondingCurve contract
     IBondingCurve public bondingCurve;
-    BondingCurveUtil public bondingCurveUtil;
+
     IUniswapV3Factory public uniswapV3Factory;
+
+    BondingCurveUtil public bondingCurveUtil;
 
     constructor() {
     }
 
     function setAddresses( address _bondingCurve,address _bondingCurveUtil,address _uniswapV3Factory ) external onlyOwner {
         bondingCurve = IBondingCurve(_bondingCurve);
-        bondingCurveUtil = BondingCurveUtil(_bondingCurveUtil);
         uniswapV3Factory =  IUniswapV3Factory(_uniswapV3Factory);
+        bondingCurveUtil =  BondingCurveUtil(_bondingCurveUtil);
     }
 
     // Struct to store the status information for a token
     struct TokenStatus {
         uint8 state;  // Current state of the token (as an uint8)
         uint256 fundingProgress;  // Progress of the funding phase (as a percentage)
-        uint256 fundingGoal;  // Total funding goal (ETH)
-        uint256 fundsCollateral;  // Total ETH
+        uint256 fundingGoal;  // Total funding goal ()
+        uint256 fundsCollateral;  // Total
         uint256 remainingTokens;  // Remaining tokens available for sale
-        uint256 currentPrice;  // Current price of the token in ETH
-        uint256 initPrice;  // init price of the token in ETH
+        uint256 currentPrice;  // Current price of the token
+        uint256 initPrice;  // init price of the token
     }
 
     // Function to get the status for multiple tokens at once
@@ -65,27 +67,31 @@ contract BondingCurveHelper is Ownable{
         }
     }
 
-    function getMaxETH(address tokenAddress) external view returns (uint256 maxEth) {
+    function getMaxBaseAmount(address tokenAddress) external view returns (uint256 maxBase) {
         (uint256 current, uint256 target)= bondingCurve.getProgress(tokenAddress);
-        (uint24 denominator ,uint256 percent ) = bondingCurve.getFeePercent();
+        (uint24 denominator ,uint256 percent ) = bondingCurve.getFeePercent(tokenAddress);
         return (target - current) * denominator/ (denominator - percent);
     }
 
     function getBuyPrice(address tokenAddress,uint256 amount ) external view returns (uint256 _current,uint256 _after) {
-        // Get the current price of the token (ETH)
+        // Get the current price of the base token
         _current = bondingCurve.getCurrentPrice(tokenAddress);
-        (uint24 denominator ,uint256 percent ) = bondingCurve.getFeePercent();
+        (uint24 denominator ,uint256 percent ) = bondingCurve.getFeePercent(tokenAddress);
         uint256 fee = _calculateFee(amount,denominator,percent);
-
-        _after = bondingCurveUtil.getCurrentPrice(bondingCurve.getCollateral(tokenAddress) + amount - fee );
+        IBondingCurve.BondingCurveParam memory bondingCurveParam = bondingCurve.getParam(tokenAddress);
+        _after = bondingCurveUtil.getCurrentPrice(bondingCurve.getCollateral(tokenAddress) + amount - fee ,
+            bondingCurveParam.A,bondingCurveParam.B,bondingCurveParam.C);
     }
 
     function getSellPrice(address tokenAddress,uint256 amount ) external view returns (uint256 _current,uint256 _after) {
-        // Get the current price of the token (ETH)
+        // Get the current price of the token
+        IBondingCurve.BondingCurveParam memory bondingCurveParam = bondingCurve.getParam(tokenAddress);
         _current = bondingCurve.getCurrentPrice(tokenAddress);
-        uint256 currentEth = bondingCurve.getCollateral(tokenAddress);
-        uint256 ethReceived = bondingCurveUtil.getFundsReceived(currentEth, amount);
-        _after = bondingCurveUtil.getCurrentPrice(currentEth - ethReceived);
+        uint256 currentCol = bondingCurve.getCollateral(tokenAddress);
+        uint256 received = bondingCurveUtil.getFundsReceived(currentCol, amount,
+            bondingCurveParam.A,bondingCurveParam.B,bondingCurveParam.C);
+        _after = bondingCurveUtil.getCurrentPrice(currentCol - received,
+            bondingCurveParam.A,bondingCurveParam.B,bondingCurveParam.C);
     }
 
     // Function to get the status of a single token
@@ -95,6 +101,9 @@ contract BondingCurveHelper is Ownable{
 
     // Internal function to get the status of a single token
     function _getTokenStatus(address tokenAddress) internal view returns (TokenStatus memory status) {
+
+        IBondingCurve.BondingCurveParam memory bondingCurveParam = bondingCurve.getParam(tokenAddress);
+
         // Get the current state of the token
         uint8 state = bondingCurve.getState(tokenAddress);
 
@@ -105,13 +114,13 @@ contract BondingCurveHelper is Ownable{
         uint256 remainingTokens = bondingCurve.getTotalTokensAvailable(tokenAddress);
 
         //get init price
-        uint256 initPrice = bondingCurveUtil.getCurrentPrice(0);
+        uint256 initPrice = bondingCurveUtil.getCurrentPrice(0,bondingCurveParam.A,bondingCurveParam.B,bondingCurveParam.C);
 
-        // Get the current price of the token (ETH)
+        // Get the current price of the token
         uint256 currentPrice = bondingCurve.getCurrentPrice(tokenAddress);
 
         //get target price
-        uint256 targetPrice = bondingCurveUtil.getCurrentPrice(target);
+        uint256 targetPrice = bondingCurveUtil.getCurrentPrice(target,bondingCurveParam.A,bondingCurveParam.B,bondingCurveParam.C);
 
         // Calculate funding progress as a percentage
         uint256 fundingProgress;
@@ -146,7 +155,6 @@ contract BondingCurveHelper is Ownable{
     function getPricesFromUniswap(address[] calldata tokenIns, address[] calldata tokenOuts, uint24 fee) external view returns (uint256[] memory prices) {
         require(tokenIns.length == tokenOuts.length, "Mismatched token arrays length");
 
-        // 分配返回的价格数组
         prices = new uint256[](tokenIns.length);
 
         for (uint256 i = 0; i < tokenIns.length; i++) {
@@ -170,7 +178,6 @@ contract BondingCurveHelper is Ownable{
             return 0;
         }
 
-        // 获取价格信息
         IUniswapV3Pool uniswapPool = IUniswapV3Pool(poolAddress);
 
         try uniswapPool.slot0() returns (  uint160 sqrtPriceX96,

@@ -1,7 +1,7 @@
 {
   "name": "daobase",
   "version": "1.0.0",
-  "description": "daobase",
+  "description": "dao base",
   "directories": {
     "lib": "lib"
   },
