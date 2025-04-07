@@ -20,7 +20,7 @@ This contract is ideal for projects seeking to raise funds through token sales w
 ## Learn More
 
 For more details about the Fundraising Model Contract and its deployment, check out these resources:
-- [Fundraising Model Contract Documentation](https://github.com/DAOBase-AI/dao-pop-contracts/new/main/Fundraising-Model-Contract/README.md)
+- [Fundraising Model Contract Documentation](https://github.com/DAOBase-AI/dao-pop-contracts/new/main/Fundraising-Model-Contract/V2/README.md)
 
 ## Contract Deployment Process
 
