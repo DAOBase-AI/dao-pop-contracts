@@ -17,4 +17,4 @@ DAO POP Contracts provide an innovative approach to token issuance, allowing cre
 ## Learn More
 
 To learn more about DAO POP and how to use the contracts, check out the following resources:
-- [DAO POP Contract Docs](https://example.com/contracts) - Contract technical implementation and deployment instructions
+- [DAO POP Contract Docs](https://github.com/DAOBase-AI/dao-pop-contracts/blob/main/Buzzing-Curve-Contract/V2/README.md) - Contract technical implementation and deployment instructions
