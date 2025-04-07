@@ -19,7 +19,7 @@ This contract allows creators to set up token sales with transparent and dynamic
 ## Learn More
 
 To learn more about the Bonding Curve Contract and how to integrate it into your project, please refer to the following resources:
-- [Bonding Curve Contract Documentation](https://github.com/DAOBase-AI/dao-pop-contracts/new/main/Buzzing-Curve-Contract/V2/README)
+- [Bonding Curve Contract Documentation](https://github.com/DAOBase-AI/dao-pop-contracts/new/main/Buzzing-Curve-Contract/V2/README.md)
 
 ## Contract Deployment Process
 
