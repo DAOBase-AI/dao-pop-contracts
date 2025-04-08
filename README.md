@@ -6,6 +6,10 @@ DAO POP is a token launch mechanism by DAOBase. It allows creators to fairly iss
 - `Buzzing-Curve-Contract`: Exponential bonding curve with auto liquidity
 - `Fundraising-Model-Contract`: Token sale framework with treasury support and LP creation
 
+## Creator Benefits	
+- Earn ETH + LP fees
+- Fair launch with long-term incentives
+
 ## Intro
 
 DAO POP Contracts provide an innovative approach to token issuance, allowing creators to launch their tokens using two main models: the **Bonding Curve** and **Fixed Fundraising**. This mechanism ensures fairness during the token sale process, while offering creators long-term incentives such as ETH and liquidity provider (LP) fees.
