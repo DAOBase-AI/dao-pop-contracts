@@ -1,6 +1,16 @@
 # DAO POP Contracts
 
+**DAOBase** is an AI-powered platform designed to empower creators and communities to launch, govern, and grow decentralized autonomous organizations (DAOs). As a comprehensive DAO aggregator and launchpad, DAOBase offers token issuance, governance infrastructure, and a reputation system across multiple blockchains.
+
 DAO POP is a token launch mechanism by DAOBase. It allows creators to fairly issue tokens via a bonding curve or fixed fundraising model.
+
+## Modules
+- `Buzzing-Curve-Contract`: Exponential bonding curve with auto liquidity
+- `Fundraising-Model-Contract`: Token sale framework with treasury support and LP creation
+
+## Creator Benefits	
+- Earn ETH + LP fees
+- Fair launch with long-term incentives
 
 ## Intro
 
